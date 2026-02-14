@@ -149,4 +149,6 @@ export interface ParallelismDataPoint {
   activeAgents: number;
   /** ms offset from pipeline start for charting */
   offsetMs: number;
+  /** Names of jobs active at this point */
+  activeJobNames: string[];
 }

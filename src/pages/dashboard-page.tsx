@@ -3,21 +3,18 @@ import {
   RiTimeLine,
   RiServerLine,
   RiHourglassLine,
-  RiRoadMapLine,
   RiStackLine,
   RiTaskLine,
   RiFlowChart,
   RiBarChartBoxLine,
 } from "@remixicon/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useTimeline, useCategories } from "@/contexts";
 import { computeAnalytics } from "@/lib/analytics";
 import { formatDuration } from "@/lib/parser";
-import { collectNodes } from "@/lib/parser";
-import type { PipelineAnalytics, PipelineNode } from "@/types";
 import { CategoryBreakdownChart } from "@/components/dashboard/category-chart";
 import { ParallelismChart } from "@/components/dashboard/parallelism-chart";
-import { TopItemsTable } from "@/components/dashboard/top-items-table";
+import { CriticalPathTimeline } from "@/components/dashboard/critical-path-timeline";
 
 function MetricCard({
   icon: Icon,
@@ -48,53 +45,6 @@ function MetricCard({
   );
 }
 
-function CriticalPathCard({
-  analytics,
-}: {
-  analytics: PipelineAnalytics;
-}) {
-  const stageSegments = analytics.criticalPath.filter(
-    (s) => s.node.type === "Stage"
-  );
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          <RiRoadMapLine className="h-5 w-5" />
-          Critical Path
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground mb-3">
-          Total: <span className="font-bold text-foreground">{formatDuration(analytics.criticalPathMs)}</span>
-          {" "}— The longest sequential chain through the pipeline.
-        </p>
-        <div className="space-y-1.5">
-          {stageSegments.map((seg) => (
-            <div key={seg.node.id} className="flex items-center gap-2">
-              <div
-                className="h-2 rounded-full bg-primary"
-                style={{
-                  width: `${Math.max(
-                    (seg.durationMs / analytics.criticalPathMs) * 100,
-                    2
-                  )}%`,
-                }}
-              />
-              <span className="text-xs text-muted-foreground whitespace-nowrap">
-                {seg.node.name}
-              </span>
-              <span className="text-xs font-medium ml-auto whitespace-nowrap">
-                {formatDuration(seg.durationMs)}
-              </span>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 export function DashboardPage() {
   const { tree } = useTimeline();
   const { categories, getCategoryForNode } = useCategories();
@@ -103,13 +53,6 @@ export function DashboardPage() {
     if (!tree) return null;
     return computeAnalytics(tree, categories, getCategoryForNode);
   }, [tree, categories, getCategoryForNode]);
-
-  const topJobs = useMemo((): PipelineNode[] => {
-    if (!tree) return [];
-    return collectNodes(tree.stages, "Job")
-      .sort((a, b) => b.durationMs - a.durationMs)
-      .slice(0, 10);
-  }, [tree]);
 
   if (!tree || !analytics) return null;
 
@@ -168,17 +111,14 @@ export function DashboardPage() {
         />
       </div>
 
-      {/* Critical Path */}
-      <CriticalPathCard analytics={analytics} />
+      {/* Critical Path Timeline */}
+      <CriticalPathTimeline criticalPath={analytics.criticalPath} tree={tree} />
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CategoryBreakdownChart breakdown={analytics.categoryBreakdown} />
         <ParallelismChart series={analytics.parallelismSeries} />
       </div>
-
-      {/* Top Jobs */}
-      <TopItemsTable jobs={topJobs} />
     </div>
   );
 }

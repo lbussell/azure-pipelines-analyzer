@@ -151,27 +151,38 @@ function computeParallelism(
   if (!pipelineStart) return [];
 
   // Create events for job start/finish
-  const events: { time: Date; delta: number }[] = [];
+  const events: { time: Date; delta: number; jobName: string }[] = [];
   for (const job of jobs) {
-    if (job.startTime) events.push({ time: job.startTime, delta: 1 });
-    if (job.finishTime) events.push({ time: job.finishTime, delta: -1 });
+    if (job.startTime) events.push({ time: job.startTime, delta: 1, jobName: job.name });
+    if (job.finishTime) events.push({ time: job.finishTime, delta: -1, jobName: job.name });
   }
   events.sort((a, b) => a.time.getTime() - b.time.getTime());
 
   const series: ParallelismDataPoint[] = [];
+  const activeJobs = new Set<string>();
   let active = 0;
+
   for (const event of events) {
     // Add point just before change (for step chart)
     series.push({
       time: event.time,
       activeAgents: active,
       offsetMs: event.time.getTime() - pipelineStart.getTime(),
+      activeJobNames: [...activeJobs],
     });
+
+    if (event.delta > 0) {
+      activeJobs.add(event.jobName);
+    } else {
+      activeJobs.delete(event.jobName);
+    }
     active += event.delta;
+
     series.push({
       time: event.time,
       activeAgents: active,
       offsetMs: event.time.getTime() - pipelineStart.getTime(),
+      activeJobNames: [...activeJobs],
     });
   }
 

@@ -54,7 +54,7 @@ function AnalyzerPage() {
           <div className="px-6 pt-6 pb-2">
             <h2 className="text-2xl font-bold">Explorer</h2>
             <p className="text-muted-foreground text-sm">
-              Drill into stages, jobs, and tasks. Click the tag icon to create categorization rules.
+              Pipeline timeline. Click bars to expand jobs into tasks. Use the tag icon to categorize.
             </p>
           </div>
           <ExplorerPage />

@@ -4,12 +4,51 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ParallelismDataPoint } from "@/types";
 import { formatDuration } from "@/lib/parser";
+
+interface ChartDataPoint {
+  offset: number;
+  agents: number;
+  activeJobNames: string[];
+}
+
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: { payload: ChartDataPoint }[];
+  label?: number;
+}) {
+  if (!active || !payload || payload.length === 0) return null;
+  const data = payload[0].payload;
+  return (
+    <div className="rounded-md border bg-popover px-3 py-2 text-xs shadow-md max-w-xs">
+      <p className="font-medium mb-1">
+        Time: {formatDuration(label ?? 0)} — {data.agents} agent
+        {data.agents !== 1 ? "s" : ""}
+      </p>
+      {data.activeJobNames.length > 0 && (
+        <ul className="space-y-0.5 text-muted-foreground">
+          {data.activeJobNames.slice(0, 12).map((name, i) => (
+            <li key={i} className="truncate">
+              • {name}
+            </li>
+          ))}
+          {data.activeJobNames.length > 12 && (
+            <li>…and {data.activeJobNames.length - 12} more</li>
+          )}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 export function ParallelismChart({
   series,
@@ -18,9 +57,10 @@ export function ParallelismChart({
 }) {
   if (series.length === 0) return null;
 
-  const data = series.map((p) => ({
+  const data: ChartDataPoint[] = series.map((p) => ({
     offset: p.offsetMs,
     agents: p.activeAgents,
+    activeJobNames: p.activeJobNames,
   }));
 
   return (
@@ -47,9 +87,8 @@ export function ParallelismChart({
                 style: { fontSize: "11px" },
               }}
             />
-            <Tooltip
-              labelFormatter={(v: number) => `Time: ${formatDuration(v)}`}
-              formatter={(value: number) => [`${value} agents`, "Active"]}
+            <RechartsTooltip
+              content={<CustomTooltip />}
             />
             <Area
               type="stepAfter"
