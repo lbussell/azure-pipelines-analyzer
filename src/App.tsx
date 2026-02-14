@@ -1,106 +1,68 @@
 import { useState, useCallback } from "react";
 import {
-  RiDashboardLine,
-  RiNodeTree,
   RiSettings3Line,
   RiUploadCloud2Line,
-  RiMenuLine,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TimelineProvider, CategoriesProvider, useTimeline } from "@/contexts";
-import { UploadPage, DashboardPage, ExplorerPage, RulesPage } from "@/pages";
+import { UploadPage } from "@/pages/upload-page";
+import { DashboardPage } from "@/pages/dashboard-page";
+import { ExplorerPage } from "@/pages/explorer-page";
+import { RulesSheet } from "@/components/rules-sheet";
 
-type Page = "upload" | "dashboard" | "explorer" | "rules";
-
-const NAV_ITEMS: { id: Page; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { id: "dashboard", label: "Dashboard", icon: RiDashboardLine },
-  { id: "explorer", label: "Explorer", icon: RiNodeTree },
-  { id: "rules", label: "Rules", icon: RiSettings3Line },
-];
-
-function AppShell() {
+function AnalyzerPage() {
   const { tree, clearTimeline } = useTimeline();
-  const [page, setPage] = useState<Page>(tree ? "dashboard" : "upload");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [rulesOpen, setRulesOpen] = useState(false);
+  const onUploaded = useCallback(() => {}, []);
 
-  const onUploaded = useCallback(() => setPage("dashboard"), []);
-
-  const handleNewFile = () => {
-    clearTimeline();
-    setPage("upload");
-  };
-
-  if (!tree && page !== "upload") {
-    return <UploadPage onUploaded={onUploaded} />;
-  }
-
-  if (page === "upload") {
+  if (!tree) {
     return <UploadPage onUploaded={onUploaded} />;
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <aside
-        className={`${
-          sidebarOpen ? "w-56" : "w-14"
-        } border-r bg-sidebar flex flex-col transition-all duration-200 shrink-0`}
-      >
-        <div className="flex items-center gap-2 p-3 border-b h-14">
+    <div className="flex flex-col h-screen bg-background">
+      {/* Top bar */}
+      <header className="flex items-center justify-between px-4 h-12 border-b bg-background shrink-0">
+        <span className="font-semibold text-sm">Pipeline Analyzer</span>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            className="h-7 text-xs"
+            onClick={() => setRulesOpen(true)}
+          >
+            <RiSettings3Line className="h-3.5 w-3.5 mr-1" />
+            Manage Rules
+          </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => setSidebarOpen((v) => !v)}
+            className="h-7 text-xs"
+            onClick={() => clearTimeline()}
           >
-            <RiMenuLine className="h-4 w-4" />
-          </Button>
-          {sidebarOpen && (
-            <span className="font-semibold text-sm truncate">
-              Pipeline Analyzer
-            </span>
-          )}
-        </div>
-
-        <nav className="flex-1 p-2 space-y-1">
-          {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
-            <Button
-              key={id}
-              variant={page === id ? "secondary" : "ghost"}
-              className={`w-full justify-start gap-2 ${
-                sidebarOpen ? "" : "px-2"
-              }`}
-              size="sm"
-              onClick={() => setPage(id)}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              {sidebarOpen && label}
-            </Button>
-          ))}
-        </nav>
-
-        <div className="p-2 border-t">
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`w-full justify-start gap-2 ${
-              sidebarOpen ? "" : "px-2"
-            }`}
-            onClick={handleNewFile}
-          >
-            <RiUploadCloud2Line className="h-4 w-4 shrink-0" />
-            {sidebarOpen && "New File"}
+            <RiUploadCloud2Line className="h-3.5 w-3.5 mr-1" />
+            New File
           </Button>
         </div>
-      </aside>
+      </header>
 
-      {/* Main content */}
+      {/* Single scrollable page: dashboard metrics then explorer */}
       <main className="flex-1 overflow-auto">
-        {page === "dashboard" && <DashboardPage />}
-        {page === "explorer" && <ExplorerPage />}
-        {page === "rules" && <RulesPage />}
+        <DashboardPage />
+        <div className="border-t">
+          <div className="px-6 pt-6 pb-2">
+            <h2 className="text-2xl font-bold">Explorer</h2>
+            <p className="text-muted-foreground text-sm">
+              Drill into stages, jobs, and tasks. Click the tag icon to create categorization rules.
+            </p>
+          </div>
+          <ExplorerPage />
+        </div>
       </main>
+
+      {/* Rules sheet */}
+      <RulesSheet open={rulesOpen} onOpenChange={setRulesOpen} />
     </div>
   );
 }
@@ -110,7 +72,7 @@ export function App() {
     <TooltipProvider>
       <TimelineProvider>
         <CategoriesProvider>
-          <AppShell />
+          <AnalyzerPage />
         </CategoriesProvider>
       </TimelineProvider>
     </TooltipProvider>

@@ -7,10 +7,10 @@ import {
   RiErrorWarningLine,
   RiTimeLine,
   RiSearchLine,
+  RiPriceTag3Line,
 } from "@remixicon/react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -19,7 +19,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useTimeline, useCategories } from "@/contexts";
+import { CreateRuleDialog } from "@/components/create-rule-dialog";
 import type { PipelineNode } from "@/types";
 import { formatDuration } from "@/lib/parser";
 
@@ -118,6 +124,7 @@ function TreeRow({
   onSelect,
   maxDurationMs,
   onAssign,
+  onCreateRule,
 }: {
   node: PipelineNode;
   depth: number;
@@ -126,6 +133,7 @@ function TreeRow({
   onSelect: (node: PipelineNode) => void;
   maxDurationMs: number;
   onAssign: (nodeId: string, categoryId: string | null) => void;
+  onCreateRule: (node: PipelineNode) => void;
 }) {
   const hasChildren = node.children.length > 0;
   const isTask = node.type === "Task";
@@ -165,6 +173,24 @@ function TreeRow({
       <Badge variant="secondary" className="text-[10px] h-5 px-1.5 shrink-0">
         {node.type}
       </Badge>
+
+      {/* Create rule button (for tasks) */}
+      {isTask && (
+        <Tooltip>
+          <TooltipTrigger
+            className="h-5 w-5 flex items-center justify-center rounded hover:bg-muted shrink-0"
+            onClick={(e) => {
+              e.stopPropagation();
+              onCreateRule(node);
+            }}
+          >
+            <RiPriceTag3Line className="h-3.5 w-3.5 text-muted-foreground" />
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p>Create rule for this task</p>
+          </TooltipContent>
+        </Tooltip>
+      )}
 
       {/* Category */}
       {isTask && (
@@ -264,6 +290,13 @@ export function ExplorerPage() {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [selectedNode, setSelectedNode] = useState<PipelineNode | null>(null);
   const [search, setSearch] = useState("");
+  const [ruleDialogOpen, setRuleDialogOpen] = useState(false);
+  const [ruleDefaultPattern, setRuleDefaultPattern] = useState("");
+
+  const openCreateRule = (node: PipelineNode) => {
+    setRuleDefaultPattern(node.name);
+    setRuleDialogOpen(true);
+  };
 
   const toggle = (id: string) => {
     setExpandedIds((prev) => {
@@ -325,7 +358,7 @@ export function ExplorerPage() {
   if (!tree) return null;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col">
       {/* Toolbar */}
       <div className="flex items-center gap-2 p-3 border-b">
         <div className="relative flex-1 max-w-sm">
@@ -353,8 +386,7 @@ export function ExplorerPage() {
       </div>
 
       {/* Tree */}
-      <ScrollArea className="flex-1">
-        <div className="min-w-[700px]">
+      <div className="min-w-[700px]">
           {/* Header */}
           <div className="flex items-center gap-2 py-2 px-3 text-xs font-medium text-muted-foreground border-b bg-muted/30 sticky top-0">
             <span style={{ width: "20px" }} />
@@ -376,10 +408,10 @@ export function ExplorerPage() {
               onSelect={setSelectedNode}
               maxDurationMs={maxDurationMs}
               onAssign={setOverride}
+              onCreateRule={openCreateRule}
             />
           ))}
-        </div>
-      </ScrollArea>
+      </div>
 
       {/* Detail sheet */}
       <Sheet
@@ -395,6 +427,14 @@ export function ExplorerPage() {
           {selectedNode && <NodeDetail node={selectedNode} />}
         </SheetContent>
       </Sheet>
+
+      {/* Create rule dialog */}
+      <CreateRuleDialog
+        open={ruleDialogOpen}
+        onOpenChange={setRuleDialogOpen}
+        defaultPattern={ruleDefaultPattern}
+        defaultMatchType="exact"
+      />
     </div>
   );
 }
