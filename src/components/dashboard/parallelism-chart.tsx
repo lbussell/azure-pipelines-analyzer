@@ -29,7 +29,7 @@ function CustomTooltip({
   if (!active || !payload || payload.length === 0) return null;
   const data = payload[0].payload;
   return (
-    <div className="rounded-md border bg-popover px-3 py-2 text-xs shadow-md max-w-xs">
+    <div className="rounded-md border bg-popover px-3 py-2 shadow-md max-w-xs">
       <p className="font-medium mb-1">
         Time: {formatDuration(label ?? 0)} — {data.agents} agent
         {data.agents !== 1 ? "s" : ""}

@@ -8,7 +8,7 @@ import {
   RiFlowChart,
   RiBarChartBoxLine,
 } from "@remixicon/react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTimeline, useCategories } from "@/contexts";
 import { computeAnalytics } from "@/lib/analytics";
 import { formatDuration } from "@/lib/parser";
@@ -29,18 +29,37 @@ function MetricCard({
 }) {
   return (
     <Card>
-      <CardContent className="flex items-center gap-4 pt-6">
-        <div className="rounded-lg bg-primary/10 p-2.5">
-          <Icon className="h-5 w-5 text-primary" />
+      <CardHeader className="gap-0">
+        <div className="flex items-center gap-4">
+          <Icon className="h-6 w-6 text-primary" />
+          <div>
+            <CardDescription>
+              {label}
+            </CardDescription>
+            <CardTitle className="text-2xl font-semibold">
+              {value}
+              {subtitle && (
+                <p className="text-sm font-normal text-muted-foreground">
+                  {subtitle}
+                </p>
+              )}
+            </CardTitle>
+            <CardFooter>
+            </CardFooter>
+          </div>
         </div>
-        <div>
+      </CardHeader>
+      {/* <CardContent className="flex items-center gap-4 pt-6"> */}
+        {/* <div className="rounded-lg bg-primary/10 p-2.5"> */}
+        {/* </div> */}
+        {/* <div>
           <p className="text-sm text-muted-foreground">{label}</p>
           <p className="text-2xl font-bold tracking-tight">{value}</p>
           {subtitle && (
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
+            <p className="text-muted-foreground">{subtitle}</p>
           )}
-        </div>
-      </CardContent>
+        </div> */}
+      {/* </CardContent> */}
     </Card>
   );
 }

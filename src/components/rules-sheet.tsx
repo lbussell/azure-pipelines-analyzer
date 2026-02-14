@@ -275,44 +275,45 @@ function RuleRow({
         <Button
           variant="ghost"
           size="sm"
-          className="h-4 w-4 p-0"
+          className="h-6 w-6 p-0"
           onClick={() => onMove(index, -1)}
           disabled={index === 0}
         >
-          <RiArrowUpLine className="h-2.5 w-2.5" />
+          <RiArrowUpLine className="h-5 w-5" />
         </Button>
         <Button
           variant="ghost"
           size="sm"
-          className="h-4 w-4 p-0"
+          className="h-6 w-6 p-0"
           onClick={() => onMove(index, 1)}
           disabled={index === total - 1}
         >
-          <RiArrowDownLine className="h-2.5 w-2.5" />
+          <RiArrowDownLine className="h-5 w-5" />
         </Button>
       </div>
+      <div className="flex flex-col min-w-0 flex-1 gap-1">
+        <div className="flex items-center gap-1.5">
+          <span className="shrink-0">
+            {rule.matchType.charAt(0).toUpperCase() + rule.matchType.slice(1)}:
+          </span>
+          <code className="text-xs truncate bg-muted px-1 py-0.5 rounded font-mono">
+            {rule.pattern}
+          </code>
+        </div>
+        <div className="flex items-center gap-1.5">
+          {/* <span className="text-muted-foreground">→</span> */}
+          {cat && (
+            <span className="flex text-xs items-center gap-1 shrink-0">
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: cat.color }} />
+              {cat.name}
+            </span>
+          )}
+          <RuleMatchCount pattern={rule.pattern} matchType={rule.matchType} />
+        </div>
+      </div>
 
-      <Badge variant="secondary" className="text-xs shrink-0">
-        {rule.matchType}
-      </Badge>
 
-      <code className="flex-1 truncate bg-muted px-1 py-0.5 rounded text-xs font-mono">
-        {rule.pattern}
-      </code>
 
-      <span className="text-muted-foreground">→</span>
-
-      {cat && (
-        <span className="flex items-center gap-1 shrink-0">
-          <span
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: cat.color }}
-          />
-          {cat.name}
-        </span>
-      )}
-
-      <RuleMatchCount pattern={rule.pattern} matchType={rule.matchType} />
 
       <Button
         variant="ghost"
@@ -386,7 +387,7 @@ function RulesSection() {
         )}
       </div>
       {sorted.length === 0 && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground">
           No rules yet. Use the tag icon next to tasks in the explorer to
           create rules quickly.
         </p>
@@ -484,9 +485,9 @@ export function RulesSheet({
         <SheetHeader>
           <SheetTitle>Categorization Rules</SheetTitle>
         </SheetHeader>
-        <ScrollArea className="h-[calc(100vh-80px)] pr-2">
-          <div className="space-y-6 pb-8">
-            <p className="text-xs text-muted-foreground">
+        <ScrollArea className="h-[calc(100vh-80px)]">
+          <div className="space-y-6 p-4">
+            <p className="text-muted-foreground">
               Define categories and rules to classify pipeline tasks. Rules
               match in priority order — first match wins.
             </p>

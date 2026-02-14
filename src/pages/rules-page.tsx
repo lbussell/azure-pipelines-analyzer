@@ -216,14 +216,14 @@ function RulesManager() {
                   {rule.matchType}
                 </Badge>
 
-                <code className="text-xs flex-1 truncate bg-muted px-1.5 py-0.5 rounded">
+                <code className="flex-1 truncate bg-muted px-1.5 py-0.5 rounded">
                   {rule.pattern}
                 </code>
 
-                <span className="text-xs text-muted-foreground">→</span>
+                <span className="text-muted-foreground">→</span>
 
                 {cat && (
-                  <span className="flex items-center gap-1 text-xs shrink-0">
+                  <span className="flex items-center gap-1 shrink-0">
                     <span
                       className="h-2.5 w-2.5 rounded-full"
                       style={{ backgroundColor: cat.color }}
@@ -368,7 +368,7 @@ function ImportExport() {
             <div className="space-y-2">
               <Label>Paste JSON:</Label>
               <textarea
-                className="w-full h-40 text-xs font-mono border rounded p-2 bg-muted"
+                className="w-full h-40 font-mono border rounded p-2 bg-muted"
                 value={importText}
                 onChange={(e) => setImportText(e.target.value)}
               />

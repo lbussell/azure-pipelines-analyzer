@@ -52,7 +52,7 @@ export function TopItemsTable({ jobs }: { jobs: PipelineNode[] }) {
                   {job.name}
                 </TableCell>
                 <TableCell>{formatDuration(job.durationMs)}</TableCell>
-                <TableCell className="text-muted-foreground text-xs max-w-[200px] truncate">
+                <TableCell className="text-muted-foreground max-w-[200px] truncate">
                   {job.workerName ?? "—"}
                 </TableCell>
                 <TableCell>

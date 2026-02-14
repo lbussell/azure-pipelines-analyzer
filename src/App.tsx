@@ -23,12 +23,12 @@ function AnalyzerPage() {
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Top bar */}
-      <header className="flex items-center justify-between px-4 h-12 border-b bg-background shrink-0">
-        <span className="font-semibold text-sm">Pipeline Analyzer</span>
+      <header className="flex items-center justify-between px-4 h-14 border-b bg-background shrink-0">
+        <span className="font-semibold">Pipeline Analyzer</span>
         <div className="flex items-center gap-2">
           <Button
-            variant="secondary"
-            size="sm"
+            variant="ghost"
+            size="lg"
             onClick={() => setRulesOpen(true)}
           >
             <RiSettings3Line className="h-3.5 w-3.5 mr-1" />
@@ -36,7 +36,7 @@ function AnalyzerPage() {
           </Button>
           <Button
             variant="ghost"
-            size="sm"
+            size="lg"
             onClick={() => clearTimeline()}
           >
             <RiUploadCloud2Line className="h-3.5 w-3.5 mr-1" />

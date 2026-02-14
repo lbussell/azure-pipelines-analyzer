@@ -15,7 +15,7 @@ export function ExplorerPage() {
   if (!tree || !analytics) return null;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col p-4">
       <GanttChart tree={tree} criticalPath={analytics.criticalPath} />
     </div>
   );

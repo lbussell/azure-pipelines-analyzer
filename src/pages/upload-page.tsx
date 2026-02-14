@@ -91,7 +91,7 @@ export function UploadPage({
               </p>
               <p className="text-sm text-muted-foreground">
                 Get timelines from:{" "}
-                <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                <code className="bg-muted px-1.5 py-0.5 rounded">
                   /build/builds/&#123;id&#125;/timeline?api-version=7.1
                 </code>
               </p>

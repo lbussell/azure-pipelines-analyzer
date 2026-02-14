@@ -24,7 +24,7 @@ import { formatDuration } from "@/lib/parser";
 const ROW_HEIGHT = 32;
 const TASK_ROW_HEIGHT = 26;
 const STAGE_HEADER_HEIGHT = 36;
-const LABEL_WIDTH = 280;
+const LABEL_WIDTH = 320;
 const MIN_BAR_WIDTH = 2;
 
 function ResultIcon({ result }: { result: string | null }) {
@@ -228,7 +228,7 @@ export function GanttChart({
         >
           <RiZoomOutLine className="h-3.5 w-3.5" />
         </Button>
-        <span className="text-xs text-muted-foreground">
+        <span className="text-muted-foreground">
           {Math.round(zoomLevel * 100)}%
         </span>
         <Button
@@ -331,7 +331,7 @@ export function GanttChart({
                   className="absolute top-0 h-full flex items-end pb-0.5"
                   style={{ left: x }}
                 >
-                  <span className="text-xs text-muted-foreground whitespace-nowrap pl-1">
+                  <span className="text-muted-foreground whitespace-nowrap pl-1">
                     {tick.label}
                   </span>
                 </div>
@@ -412,7 +412,7 @@ export function GanttChart({
                       }}
                     />
                     <TooltipContent side="top" className="max-w-xs">
-                      <div className="text-xs space-y-0.5">
+                      <div className="space-y-0.5">
                         <p className="font-medium">{row.node.name}</p>
                         <p className="text-muted-foreground">
                           {formatDuration(row.node.durationMs)}
@@ -431,7 +431,7 @@ export function GanttChart({
                         {isCritical && (
                           <Badge
                             variant="secondary"
-                            className="text-xs h-4 px-1 mt-0.5"
+                            className="h-4 px-1 mt-0.5"
                           >
                             Critical Path
                           </Badge>

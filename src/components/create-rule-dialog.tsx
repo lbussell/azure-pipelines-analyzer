@@ -177,7 +177,7 @@ export function CreateRuleDialog({
                 </SelectContent>
               </Select>
             ) : (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground">
                 No categories yet — create one below.
               </p>
             )}

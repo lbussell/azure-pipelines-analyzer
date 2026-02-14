@@ -55,11 +55,11 @@ export function CategoryTagPopover({ node }: { node: PipelineNode }) {
       </PopoverTrigger>
 
       <PopoverContent
-        className="w-56 p-1.5"
+        // className="w-56 p-1.5"
         align="end"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="text-xs text-muted-foreground px-2 py-1 truncate">
+        <p className="text-muted-foreground text-sm px-2 truncate">
           Rule: exact match &ldquo;{node.name}&rdquo;
         </p>
         <div className="max-h-48 overflow-auto">
@@ -87,19 +87,19 @@ export function CategoryTagPopover({ node }: { node: PipelineNode }) {
             type="color"
             value={newColor}
             onChange={(e) => setNewColor(e.target.value)}
-            className="h-6 w-6 rounded border cursor-pointer shrink-0"
+            className="h-7 w-7 rounded border cursor-pointer shrink-0"
           />
           <Input
             placeholder="New category…"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAddAndPick()}
-            className="flex-1 h-6 text-xs px-1.5"
+            className="flex-1 h-7 px-1.5"
           />
           <Button
             variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0 shrink-0"
+            size="lg"
+            className="h-7 w-7 p-0 shrink-0"
             onClick={handleAddAndPick}
             disabled={!newName.trim()}
           >
