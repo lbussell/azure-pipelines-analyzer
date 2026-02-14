@@ -114,20 +114,20 @@ function CategorySection() {
             type="color"
             value={cat.color}
             onChange={(e) => updateCategory(cat.id, { color: e.target.value })}
-            className="h-7 w-7 rounded border cursor-pointer"
+            className="h-8 w-8 rounded border cursor-pointer"
           />
           <Input
             value={cat.name}
             onChange={(e) => updateCategory(cat.id, { name: e.target.value })}
-            className="flex-1 h-7 text-sm"
+            className="flex-1 h-8"
           />
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 w-7 p-0"
+            className="h-8 w-8 p-0"
             onClick={() => removeCategory(cat.id)}
           >
-            <RiDeleteBinLine className="h-3.5 w-3.5" />
+            <RiDeleteBinLine className="h-4 w-4" />
           </Button>
         </div>
       ))}
@@ -136,22 +136,21 @@ function CategorySection() {
           type="color"
           value={newColor}
           onChange={(e) => setNewColor(e.target.value)}
-          className="h-7 w-7 rounded border cursor-pointer"
+          className="h-8 w-8 rounded border cursor-pointer"
         />
         <Input
           placeholder="New category name..."
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-          className="flex-1 h-7 text-sm"
+          className="flex-1 h-8"
         />
         <Button
           size="sm"
-          className="h-7 text-xs"
           onClick={handleAdd}
           disabled={!newName.trim()}
         >
-          <RiAddLine className="h-3 w-3 mr-0.5" />
+          <RiAddLine className="h-3.5 w-3.5 mr-0.5" />
           Add
         </Button>
       </div>
@@ -196,13 +195,13 @@ function RuleRow({
 
   if (editing) {
     return (
-      <div className="p-2 rounded border bg-muted/30 space-y-2 text-xs">
+      <div className="p-2.5 rounded border bg-muted/30 space-y-2 text-sm">
         <div className="flex items-center gap-2">
           <Select
             value={editMatchType}
             onValueChange={(v) => { if (v) setEditMatchType(v as RuleMatchType); }}
           >
-            <SelectTrigger className="w-24 h-7 text-xs">
+            <SelectTrigger className="w-28 h-8">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -215,7 +214,7 @@ function RuleRow({
           <Input
             value={editPattern}
             onChange={(e) => setEditPattern(e.target.value)}
-            className="flex-1 h-7 text-xs"
+            className="flex-1 h-8"
             placeholder="Pattern..."
           />
         </div>
@@ -224,7 +223,7 @@ function RuleRow({
             value={editCategoryId}
             onValueChange={(v) => { if (v) setEditCategoryId(v); }}
           >
-            <SelectTrigger className="flex-1 h-7 text-xs">
+            <SelectTrigger className="flex-1 h-8">
               <SelectValue placeholder="Category...">
                 {(() => {
                   const editCat = categories.find((c) => c.id === editCategoryId);
@@ -257,12 +256,12 @@ function RuleRow({
           <RuleMatchCount pattern={editPattern} matchType={editMatchType} />
         </div>
         <div className="flex items-center gap-1.5 justify-end">
-          <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={handleCancel}>
-            <RiCloseLine className="h-3 w-3 mr-0.5" />
+          <Button variant="ghost" size="sm" onClick={handleCancel}>
+            <RiCloseLine className="h-3.5 w-3.5 mr-0.5" />
             Cancel
           </Button>
-          <Button size="sm" className="h-6 text-xs" onClick={handleSave} disabled={!editPattern.trim() || !editCategoryId}>
-            <RiCheckLine className="h-3 w-3 mr-0.5" />
+          <Button size="sm" onClick={handleSave} disabled={!editPattern.trim() || !editCategoryId}>
+            <RiCheckLine className="h-3.5 w-3.5 mr-0.5" />
             Save
           </Button>
         </div>
@@ -271,7 +270,7 @@ function RuleRow({
   }
 
   return (
-    <div className="flex items-center gap-1.5 p-1.5 rounded border bg-muted/30 text-xs">
+    <div className="flex items-center gap-1.5 p-2 rounded border bg-muted/30 text-sm">
       <div className="flex flex-col gap-0.5">
         <Button
           variant="ghost"
@@ -293,11 +292,11 @@ function RuleRow({
         </Button>
       </div>
 
-      <Badge variant="secondary" className="text-[10px] shrink-0">
+      <Badge variant="secondary" className="text-xs shrink-0">
         {rule.matchType}
       </Badge>
 
-      <code className="flex-1 truncate bg-muted px-1 py-0.5 rounded text-[11px]">
+      <code className="flex-1 truncate bg-muted px-1 py-0.5 rounded text-xs font-mono">
         {rule.pattern}
       </code>
 
@@ -356,12 +355,11 @@ function RulesSection() {
         <h3 className="text-sm font-semibold">Rules (priority order)</h3>
         {sorted.length > 0 && (
           confirmClear ? (
-            <div className="flex items-center gap-1">
-              <span className="text-xs text-muted-foreground">Clear all?</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm text-muted-foreground">Clear all?</span>
               <Button
                 variant="destructive"
                 size="sm"
-                className="h-6 text-xs"
                 onClick={() => { clearAllRules(); setConfirmClear(false); }}
               >
                 Yes
@@ -369,7 +367,6 @@ function RulesSection() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 text-xs"
                 onClick={() => setConfirmClear(false)}
               >
                 No
@@ -379,10 +376,10 @@ function RulesSection() {
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 text-xs text-destructive hover:text-destructive"
+              className="text-destructive hover:text-destructive"
               onClick={() => setConfirmClear(true)}
             >
-              <RiDeleteBinLine className="h-3 w-3 mr-0.5" />
+              <RiDeleteBinLine className="h-3.5 w-3.5 mr-0.5" />
               Clear All
             </Button>
           )
@@ -437,11 +434,11 @@ function ImportExportSection() {
     <div className="space-y-2">
       <h3 className="text-sm font-semibold">Import / Export</h3>
       <div className="flex gap-2">
-        <Button variant="secondary" size="sm" className="h-7 text-xs" onClick={handleExport}>
+        <Button variant="secondary" size="sm" onClick={handleExport}>
           <RiDownloadLine className="h-3.5 w-3.5 mr-1" />
           Export
         </Button>
-        <Button variant="secondary" size="sm" className="h-7 text-xs" onClick={() => setImportOpen(true)}>
+        <Button variant="secondary" size="sm" onClick={() => setImportOpen(true)}>
           <RiUploadLine className="h-3.5 w-3.5 mr-1" />
           Import
         </Button>
@@ -455,7 +452,7 @@ function ImportExportSection() {
           <div className="space-y-2">
             <Label>Paste JSON:</Label>
             <textarea
-              className="w-full h-40 text-xs font-mono border rounded p-2 bg-muted"
+              className="w-full h-40 text-sm font-mono border rounded p-2 bg-muted"
               value={importText}
               onChange={(e) => setImportText(e.target.value)}
             />

@@ -21,10 +21,10 @@ import { useCategories } from "@/contexts";
 import type { PipelineNode, PipelineTree, CriticalPathSegment } from "@/types";
 import { formatDuration } from "@/lib/parser";
 
-const ROW_HEIGHT = 28;
-const TASK_ROW_HEIGHT = 22;
-const STAGE_HEADER_HEIGHT = 32;
-const LABEL_WIDTH = 260;
+const ROW_HEIGHT = 32;
+const TASK_ROW_HEIGHT = 26;
+const STAGE_HEADER_HEIGHT = 36;
+const LABEL_WIDTH = 280;
 const MIN_BAR_WIDTH = 2;
 
 function ResultIcon({ result }: { result: string | null }) {
@@ -270,7 +270,7 @@ export function GanttChart({
               return (
                 <div
                   key={row.node.id}
-                  className={`absolute flex items-center gap-1 pr-2 text-xs border-b border-border/30 ${
+                  className={`absolute flex items-center gap-1 pr-2 text-sm border-b border-border/30 ${
                     hoveredRow === row.node.id ? "bg-muted/50" : ""
                   } ${isStage ? "bg-muted/20 font-medium" : ""}`}
                   style={{
@@ -331,7 +331,7 @@ export function GanttChart({
                   className="absolute top-0 h-full flex items-end pb-0.5"
                   style={{ left: x }}
                 >
-                  <span className="text-[9px] text-muted-foreground whitespace-nowrap pl-1">
+                  <span className="text-xs text-muted-foreground whitespace-nowrap pl-1">
                     {tick.label}
                   </span>
                 </div>
@@ -431,7 +431,7 @@ export function GanttChart({
                         {isCritical && (
                           <Badge
                             variant="secondary"
-                            className="text-[9px] h-4 px-1 mt-0.5"
+                            className="text-xs h-4 px-1 mt-0.5"
                           >
                             Critical Path
                           </Badge>
@@ -443,7 +443,7 @@ export function GanttChart({
                   {/* Inline label for wide enough bars */}
                   {width > 60 && !isStage && (
                     <span
-                      className="absolute text-[9px] text-white truncate pointer-events-none"
+                      className="absolute text-[10px] text-white truncate pointer-events-none"
                       style={{
                         left: left + 4,
                         top: barTop + 1,

@@ -118,7 +118,7 @@ export function CriticalPathTimeline({
                   }}
                 >
                   {widthPct > 6 && (
-                    <span className="text-[10px] text-white truncate px-1">
+                    <span className="text-xs text-white truncate px-1">
                       {seg.node.name}
                     </span>
                   )}

@@ -29,7 +29,6 @@ function AnalyzerPage() {
           <Button
             variant="secondary"
             size="sm"
-            className="h-7 text-xs"
             onClick={() => setRulesOpen(true)}
           >
             <RiSettings3Line className="h-3.5 w-3.5 mr-1" />
@@ -38,7 +37,6 @@ function AnalyzerPage() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 text-xs"
             onClick={() => clearTimeline()}
           >
             <RiUploadCloud2Line className="h-3.5 w-3.5 mr-1" />

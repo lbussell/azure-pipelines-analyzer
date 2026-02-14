@@ -59,7 +59,7 @@ export function CategoryTagPopover({ node }: { node: PipelineNode }) {
         align="end"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="text-[10px] text-muted-foreground px-2 py-1 truncate">
+        <p className="text-xs text-muted-foreground px-2 py-1 truncate">
           Rule: exact match &ldquo;{node.name}&rdquo;
         </p>
         <div className="max-h-48 overflow-auto">
