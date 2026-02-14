@@ -6,12 +6,22 @@ import {
   RiArrowDownLine,
   RiDownloadLine,
   RiUploadLine,
+  RiEdit2Line,
+  RiCloseLine,
+  RiCheckLine,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +37,7 @@ import {
 } from "@/components/ui/sheet";
 import { useCategories, useTimeline } from "@/contexts";
 import { collectNodes } from "@/lib/parser";
-import type { RuleMatchType } from "@/types";
+import type { CategorizationRule, RuleMatchType } from "@/types";
 
 const PRESET_COLORS = [
   "#22c55e",
@@ -149,8 +159,186 @@ function CategorySection() {
   );
 }
 
+function RuleRow({
+  rule,
+  index,
+  total,
+  onMove,
+}: {
+  rule: CategorizationRule;
+  index: number;
+  total: number;
+  onMove: (index: number, direction: -1 | 1) => void;
+}) {
+  const { categories, updateRule, removeRule } = useCategories();
+  const [editing, setEditing] = useState(false);
+  const [editPattern, setEditPattern] = useState(rule.pattern);
+  const [editMatchType, setEditMatchType] = useState<RuleMatchType>(rule.matchType);
+  const [editCategoryId, setEditCategoryId] = useState(rule.categoryId);
+
+  const cat = categories.find((c) => c.id === rule.categoryId);
+
+  const handleSave = () => {
+    updateRule(rule.id, {
+      pattern: editPattern.trim(),
+      matchType: editMatchType,
+      categoryId: editCategoryId,
+    });
+    setEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditPattern(rule.pattern);
+    setEditMatchType(rule.matchType);
+    setEditCategoryId(rule.categoryId);
+    setEditing(false);
+  };
+
+  if (editing) {
+    return (
+      <div className="p-2 rounded border bg-muted/30 space-y-2 text-xs">
+        <div className="flex items-center gap-2">
+          <Select
+            value={editMatchType}
+            onValueChange={(v) => { if (v) setEditMatchType(v as RuleMatchType); }}
+          >
+            <SelectTrigger className="w-24 h-7 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="exact">exact</SelectItem>
+              <SelectItem value="contains">contains</SelectItem>
+              <SelectItem value="startsWith">starts with</SelectItem>
+              <SelectItem value="regex">regex</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input
+            value={editPattern}
+            onChange={(e) => setEditPattern(e.target.value)}
+            className="flex-1 h-7 text-xs"
+            placeholder="Pattern..."
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Select
+            value={editCategoryId}
+            onValueChange={(v) => { if (v) setEditCategoryId(v); }}
+          >
+            <SelectTrigger className="flex-1 h-7 text-xs">
+              <SelectValue placeholder="Category...">
+                {(() => {
+                  const editCat = categories.find((c) => c.id === editCategoryId);
+                  return editCat ? (
+                    <span className="flex items-center gap-1.5">
+                      <span
+                        className="h-2.5 w-2.5 rounded-full shrink-0"
+                        style={{ backgroundColor: editCat.color }}
+                      />
+                      {editCat.name}
+                    </span>
+                  ) : "Category...";
+                })()}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  <span className="flex items-center gap-1.5">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: c.color }}
+                    />
+                    {c.name}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <RuleMatchCount pattern={editPattern} matchType={editMatchType} />
+        </div>
+        <div className="flex items-center gap-1.5 justify-end">
+          <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={handleCancel}>
+            <RiCloseLine className="h-3 w-3 mr-0.5" />
+            Cancel
+          </Button>
+          <Button size="sm" className="h-6 text-xs" onClick={handleSave} disabled={!editPattern.trim() || !editCategoryId}>
+            <RiCheckLine className="h-3 w-3 mr-0.5" />
+            Save
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1.5 p-1.5 rounded border bg-muted/30 text-xs">
+      <div className="flex flex-col gap-0.5">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-4 w-4 p-0"
+          onClick={() => onMove(index, -1)}
+          disabled={index === 0}
+        >
+          <RiArrowUpLine className="h-2.5 w-2.5" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-4 w-4 p-0"
+          onClick={() => onMove(index, 1)}
+          disabled={index === total - 1}
+        >
+          <RiArrowDownLine className="h-2.5 w-2.5" />
+        </Button>
+      </div>
+
+      <Badge variant="secondary" className="text-[10px] shrink-0">
+        {rule.matchType}
+      </Badge>
+
+      <code className="flex-1 truncate bg-muted px-1 py-0.5 rounded text-[11px]">
+        {rule.pattern}
+      </code>
+
+      <span className="text-muted-foreground">→</span>
+
+      {cat && (
+        <span className="flex items-center gap-1 shrink-0">
+          <span
+            className="h-2 w-2 rounded-full"
+            style={{ backgroundColor: cat.color }}
+          />
+          {cat.name}
+        </span>
+      )}
+
+      <RuleMatchCount pattern={rule.pattern} matchType={rule.matchType} />
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-5 w-5 p-0"
+        onClick={() => setEditing(true)}
+      >
+        <RiEdit2Line className="h-3 w-3" />
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-5 w-5 p-0"
+        onClick={() => removeRule(rule.id)}
+      >
+        <RiDeleteBinLine className="h-3 w-3" />
+      </Button>
+    </div>
+  );
+}
+
 function RulesSection() {
-  const { rules, categories, removeRule, reorderRules } = useCategories();
+  const { rules, reorderRules, clearAllRules } = useCategories();
+  const [confirmClear, setConfirmClear] = useState(false);
 
   const moveRule = (index: number, direction: -1 | 1) => {
     const sorted = [...rules].sort((a, b) => a.priority - b.priority);
@@ -164,77 +352,57 @@ function RulesSection() {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold">Rules (priority order)</h3>
-      {sorted.length === 0 && (
-        <p className="text-xs text-muted-foreground">
-          No rules yet. Use the ⊕ button next to tasks in the explorer to
-          create rules quickly.
-        </p>
-      )}
-      {sorted.map((rule, index) => {
-        const cat = categories.find((c) => c.id === rule.categoryId);
-        return (
-          <div
-            key={rule.id}
-            className="flex items-center gap-1.5 p-1.5 rounded border bg-muted/30 text-xs"
-          >
-            <div className="flex flex-col gap-0.5">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold">Rules (priority order)</h3>
+        {sorted.length > 0 && (
+          confirmClear ? (
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-muted-foreground">Clear all?</span>
               <Button
-                variant="ghost"
+                variant="destructive"
                 size="sm"
-                className="h-4 w-4 p-0"
-                onClick={() => moveRule(index, -1)}
-                disabled={index === 0}
+                className="h-6 text-xs"
+                onClick={() => { clearAllRules(); setConfirmClear(false); }}
               >
-                <RiArrowUpLine className="h-2.5 w-2.5" />
+                Yes
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-4 w-4 p-0"
-                onClick={() => moveRule(index, 1)}
-                disabled={index === sorted.length - 1}
+                className="h-6 text-xs"
+                onClick={() => setConfirmClear(false)}
               >
-                <RiArrowDownLine className="h-2.5 w-2.5" />
+                No
               </Button>
             </div>
-
-            <Badge variant="secondary" className="text-[10px] shrink-0">
-              {rule.matchType}
-            </Badge>
-
-            <code className="flex-1 truncate bg-muted px-1 py-0.5 rounded text-[11px]">
-              {rule.pattern}
-            </code>
-
-            <span className="text-muted-foreground">→</span>
-
-            {cat && (
-              <span className="flex items-center gap-1 shrink-0">
-                <span
-                  className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: cat.color }}
-                />
-                {cat.name}
-              </span>
-            )}
-
-            <RuleMatchCount
-              pattern={rule.pattern}
-              matchType={rule.matchType}
-            />
-
+          ) : (
             <Button
               variant="ghost"
               size="sm"
-              className="h-5 w-5 p-0"
-              onClick={() => removeRule(rule.id)}
+              className="h-6 text-xs text-destructive hover:text-destructive"
+              onClick={() => setConfirmClear(true)}
             >
-              <RiDeleteBinLine className="h-3 w-3" />
+              <RiDeleteBinLine className="h-3 w-3 mr-0.5" />
+              Clear All
             </Button>
-          </div>
-        );
-      })}
+          )
+        )}
+      </div>
+      {sorted.length === 0 && (
+        <p className="text-xs text-muted-foreground">
+          No rules yet. Use the tag icon next to tasks in the explorer to
+          create rules quickly.
+        </p>
+      )}
+      {sorted.map((rule, index) => (
+        <RuleRow
+          key={rule.id}
+          rule={rule}
+          index={index}
+          total={sorted.length}
+          onMove={moveRule}
+        />
+      ))}
     </div>
   );
 }

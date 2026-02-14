@@ -22,6 +22,7 @@ interface CategoriesContextValue extends CategoriesState {
   reorderRules: (rules: CategorizationRule[]) => void;
   setOverride: (nodeId: string, categoryId: string | null) => void;
   clearOverrides: () => void;
+  clearAllRules: () => void;
   getCategoryForNode: (node: PipelineNode) => string | null;
   applyCategoryToNode: (node: PipelineNode) => string | null;
   exportData: () => string;
@@ -173,6 +174,10 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
     setState((s) => ({ ...s, overrides: {} }));
   }, []);
 
+  const clearAllRules = useCallback(() => {
+    setState((s) => ({ ...s, rules: [], overrides: {} }));
+  }, []);
+
   const getCategoryForNode = useCallback(
     (node: PipelineNode): string | null => {
       return matchCategory(state.rules, state.overrides, node);
@@ -231,6 +236,7 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
         reorderRules,
         setOverride,
         clearOverrides,
+        clearAllRules,
         getCategoryForNode,
         applyCategoryToNode,
         exportData,
