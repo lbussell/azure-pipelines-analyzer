@@ -8,7 +8,7 @@ import {
   RiFlowChart,
   RiBarChartBoxLine,
 } from "@remixicon/react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTimeline, useCategories } from "@/contexts";
 import { computeAnalytics } from "@/lib/analytics";
 import { formatDuration } from "@/lib/parser";
