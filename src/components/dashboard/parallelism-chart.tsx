@@ -74,6 +74,8 @@ export function ParallelismChart({
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="offset"
+              type="number"
+              domain={[0, "dataMax"]}
               tickFormatter={(v: number) => formatDuration(v)}
               style={{ fontSize: "11px" }}
             />
