@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import {
   RiSettings3Line,
   RiUploadCloud2Line,
+  RiGithubLine,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -42,6 +43,15 @@ function AnalyzerPage() {
             <RiUploadCloud2Line className="h-3.5 w-3.5 mr-1" />
             New File
           </Button>
+          <a
+            href="https://github.com/lbussell/azure-pipelines-analyzer"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center h-9 w-9 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            aria-label="View on GitHub"
+          >
+            <RiGithubLine className="h-5 w-5" />
+          </a>
         </div>
       </header>
 
