@@ -1,8 +1,47 @@
 import { useCallback, useState, useRef } from "react";
-import { RiUploadCloud2Line, RiFileTextLine, RiGithubLine } from "@remixicon/react";
+import { RiUploadCloud2Line, RiFileTextLine, RiGithubLine, RiFileCopyLine, RiCheckLine } from "@remixicon/react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useTimeline } from "@/contexts";
 import type { TimelineData } from "@/types";
+
+/**
+ * Parse an Azure DevOps build URL and return the corresponding timeline API URL.
+ * Accepts URLs like:
+ *   https://dev.azure.com/{org}/{project}/_build/results?buildId={id}&view=results
+ *   https://{org}.visualstudio.com/{project}/_build/results?buildId={id}
+ * Returns null if the URL cannot be parsed.
+ */
+function buildTimelineUrl(buildUrl: string): string | null {
+  try {
+    const url = new URL(buildUrl.trim());
+    const buildId = url.searchParams.get("buildId");
+    if (!buildId) return null;
+
+    // dev.azure.com/{org}/{project}/_build/...
+    const devAzureMatch = url.pathname.match(
+      /^\/([^/]+)\/([^/]+)\/_build/
+    );
+    if (url.hostname === "dev.azure.com" && devAzureMatch) {
+      const [, org, project] = devAzureMatch;
+      return `https://dev.azure.com/${org}/${project}/_apis/build/builds/${buildId}/timeline?api-version=7.1`;
+    }
+
+    // {org}.visualstudio.com/{project}/_build/...
+    const vsMatch = url.hostname.match(/^(.+)\.visualstudio\.com$/);
+    const vsPathMatch = url.pathname.match(/^\/([^/]+)\/_build/);
+    if (vsMatch && vsPathMatch) {
+      const org = vsMatch[1];
+      const project = vsPathMatch[1];
+      return `https://${org}.visualstudio.com/${project}/_apis/build/builds/${buildId}/timeline?api-version=7.1`;
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 export function UploadPage({
   onUploaded,
@@ -12,7 +51,19 @@ export function UploadPage({
   const { loadTimeline } = useTimeline();
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [buildUrl, setBuildUrl] = useState("");
+  const [copied, setCopied] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const timelineUrl = buildTimelineUrl(buildUrl);
+
+  const copyTimelineUrl = useCallback(() => {
+    if (!timelineUrl) return;
+    navigator.clipboard.writeText(timelineUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, [timelineUrl]);
 
   const processFile = useCallback(
     async (file: File) => {
@@ -91,8 +142,8 @@ export function UploadPage({
               </p>
               <p className="text-sm text-muted-foreground">
                 Get timelines from:{" "}
-                <code className="bg-muted px-1.5 py-0.5 rounded">
-                  /build/builds/&#123;id&#125;/timeline?api-version=7.1
+                <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+                  /_apis/build/builds/&#123;buildId&#125;/timeline?api-version=7.1
                 </code>
               </p>
             </div>
@@ -103,6 +154,52 @@ export function UploadPage({
               onChange={onFileChange}
               className="hidden"
             />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="space-y-3 py-4">
+            <p className="text-sm font-medium">
+              Don&apos;t have the timeline JSON? Paste your build URL to get the
+              download link:
+            </p>
+            <Input
+              type="url"
+              placeholder="https://dev.azure.com/{org}/{project}/_build/results?buildId={id}"
+              value={buildUrl}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBuildUrl(e.target.value)}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            />
+            {buildUrl && timelineUrl && (
+              <div className="flex items-center gap-2">
+                <code className="bg-muted px-2 py-1 rounded text-xs flex-1 truncate">
+                  {timelineUrl}
+                </code>
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    copyTimelineUrl();
+                  }}
+                  aria-label="Copy timeline URL"
+                >
+                  {copied ? (
+                    <RiCheckLine className="h-3.5 w-3.5 text-green-600" />
+                  ) : (
+                    <RiFileCopyLine className="h-3.5 w-3.5" />
+                  )}
+                </Button>
+              </div>
+            )}
+            {buildUrl && !timelineUrl && (
+              <p className="text-sm text-destructive">
+                Could not parse the build URL. Expected a URL like:{" "}
+                <code className="text-xs">
+                  https://dev.azure.com/&#123;org&#125;/&#123;project&#125;/_build/results?buildId=&#123;id&#125;
+                </code>
+              </p>
+            )}
           </CardContent>
         </Card>
 
