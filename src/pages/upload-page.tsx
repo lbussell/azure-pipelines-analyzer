@@ -1,5 +1,5 @@
 import { useCallback, useState, useRef } from "react";
-import { RiUploadCloud2Line, RiFileTextLine } from "@remixicon/react";
+import { RiUploadCloud2Line, RiFileTextLine, RiGithubLine } from "@remixicon/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTimeline } from "@/contexts";
 import type { TimelineData } from "@/types";
@@ -55,7 +55,7 @@ export function UploadPage({
   );
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+    <div className="relative flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-lg space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">
@@ -115,6 +115,17 @@ export function UploadPage({
           </Card>
         )}
       </div>
+      <footer className="absolute bottom-0 left-0 right-0 flex justify-center py-4">
+        <a
+          href="https://github.com/lbussell/azure-pipelines-analyzer"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <RiGithubLine className="h-4 w-4" />
+          View on GitHub
+        </a>
+      </footer>
     </div>
   );
 }
